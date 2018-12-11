@@ -1,0 +1,126 @@
+swagger: "2.0"
+info:
+  version: "0.0.1"
+  title: Bookmark  API
+# during dev, should point to your local machine
+host: localhost:10010
+# basePath prefixes all resource paths 
+basePath: /
+# 
+schemes:
+  # tip: remove http to make production-grade
+  - http
+  - https
+# format of bodies a client can send (Content-Type)
+consumes:
+  - application/json
+# format of the responses to the client (Accepts)
+produces:
+  - application/json
+paths:
+  /bookmarks/{bookmarkId}:
+    x-swagger-router-controller: bookmark_ctrl
+    get:
+      description: Get a bookmarks by ID
+      operationId: getBookmarkById
+      parameters:
+        - name: bookmarkId
+          in: path
+          type: integer
+          required: true
+          description: Numeric ID of the bookmarks to get
+      
+      responses:
+        "200":
+          description: Success
+          schema:
+            # a pointer to a definition
+            $ref: "#/definitions/Bookmark"
+        # responses may fall through to errors
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+          
+  /bookmarks:
+    x-swagger-router-controller: bookmark_ctrl
+    get:
+      description: Returns 'Bookmarks List' to the caller
+      # used as the method name of the controller
+      operationId: getBookmarks
+      
+      responses:
+        "200":
+          description: Success
+          schema:
+            # a pointer to a definition
+            $ref: "#/definitions/GetBookmarksResponse"
+        # responses may fall through to errors
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+  /hello:
+    # binds a127 app logic to a route
+    x-swagger-router-controller: hello_world
+    get:
+      description: Returns 'Hello' to the caller
+      # used as the method name of the controller
+      operationId: hello
+      parameters:
+        - name: name
+          in: query
+          description: The name of the person to whom to say hello
+          required: false
+          type: string
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/HelloWorldResponse"
+        # responses may fall through to errors
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+  /swagger:
+    x-swagger-pipe: swagger_raw
+# complex objects have schema definitions
+definitions:
+  GetBookmarksResponse:
+    required:
+        - bookmarks
+    properties:
+      bookmarks:
+        type: array
+        items:
+          $ref: "#/definitions/Bookmark" 
+  
+  Bookmark:
+       required:
+          - id
+          - url
+          - description 
+       properties:
+        id:
+          type: number
+          description: Id
+        url:
+          type: string
+          description: name
+        description: 
+          type: string
+          description: Brief description
+          
+  HelloWorldResponse:
+    required:
+      - message
+    properties:
+      message:
+        type: string
+  ErrorResponse:
+    required:
+      - message
+    properties:
+      message:
+        type: string
